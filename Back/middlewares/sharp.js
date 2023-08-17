@@ -8,7 +8,7 @@ const resizeImg = (req, res, next) => {
   } else {
     const imgName = req.file.filename.replace(/\.[^.]*$/, "");
     const newImgName = `${Date.now()}-${imgName}.webp`;
-    const outputPath = path.join("images", newImgName);
+    const outputPath = path.join("images", newImgName).replace(/\\/g, '/');
 
     sharp(req.file.path)
       .resize(206, 260, "cover")
