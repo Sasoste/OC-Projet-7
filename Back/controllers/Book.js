@@ -70,7 +70,7 @@ exports.deleteBook = (req, res, next) => {
         res.status(401).json({ message: "Non autorisé" });
       } else {
         const filename = book.imageUrl.split("/images/")[1];
-        fs.unlink(`images/${filename}`, () => {
+        fs.unlink(`images/${filename}`, (error) => {
           if (error) {
             console.error("Erreur dans la suppression de l'image:", error);
           }
