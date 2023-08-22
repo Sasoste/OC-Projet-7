@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose"); 
 const booksRoutes = require("./routes/Book");
 const userRoutes = require("./routes/User");
@@ -22,30 +21,26 @@ app.use((req, res, next) => {
   next();
 });
 
+// Limite le nombre d'action à 100 toutes les 15 minutes. 
 const limiter = rateLimit({
   windowsMs: 15*60*1000,
   max: 100, 
   message: "Vous avez atteint le nombre limite de requêtes, rééssayer dans 15 minutes"
 })
 
+// Connecte au serveur mongoose
 mongoose.connect(process.env.MONGODB_URI,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-app.use(limiter); 
-
-
-app.use(bodyParser.json());
-app.use(express.json());
-
-
-
-
-app.use("/images", express.static(path.join(__dirname, "images")));
-app.use("/api/books", booksRoutes); 
-app.use("/api/auth", userRoutes);
+// Les middlewares
+app.use(limiter); // Applique la limitation  
+app.use(express.json()); // Parse les corps de requête au format JSON
+app.use("/images", express.static(path.join(__dirname, "images"))); // Envoie la bonne image par rapport à l'URL
+app.use("/api/books", booksRoutes); // Utilise les routes pour les livres
+app.use("/api/auth", userRoutes); // Utilise les routes pour les users
 
 
 module.exports = app;
